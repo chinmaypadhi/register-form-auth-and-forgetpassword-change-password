@@ -1,0 +1,11 @@
+﻿.text
+{
+    color:darkslategrey;
+    background-color:red;
+    border:2px solid yellow;
+}
+body {
+    background-image: url("https://cdn.pixabay.com/photo/2015/12/01/20/28/road-1072823_960_720.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+}
