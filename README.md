@@ -92,13 +92,13 @@ end
 //Stored Procedure to check, if the password reset link, is a valid link.
 
 
-Create Proc spIsPasswordResetLinkValid 
+alter Proc spIsPasswordResetLinkValid 
 @GUID uniqueidentifier
 as
 Begin
  Declare @UserId int
  
- If(Exists(Select UserId from tblResetPasswordRequests where Id = @GUID))
+ If(Exists(Select UserId from tblResetPasswordRequest where Id = @GUID))
  Begin
   Select 1 as IsValidPasswordResetLink
  End
