@@ -23,7 +23,7 @@ namespace WebApplication76.registration
             sbEmailBody.Append("dear" + userName +"<br/><br/>");
             sbEmailBody.Append("please click on the following link to reset your pasword");
             sbEmailBody.Append("<br/>");
-            sbEmailBody.Append("http://localhost/WebApplication76/Registration/changepassword.aspx?uid=" + uniqueId);
+            sbEmailBody.Append("https://localhost:44349/registration/changePassword.aspx?uid=" + uniqueId);
             sbEmailBody.Append("<b>chinmay technologies</b>");
             MailMessage.IsBodyHtml = true;
             MailMessage.Body = sbEmailBody.ToString();
