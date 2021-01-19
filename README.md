@@ -107,3 +107,35 @@ Begin
   Select 0 as IsValidPasswordResetLink
  End
 End
+
+
+alter Proc spChangePassword
+@GUID uniqueidentifier,
+@Password nvarchar(100)
+as
+Begin
+ Declare @UserId int
+ 
+ Select @UserId = userId 
+ from tblResetPasswordRequest
+ where id= @GUID
+ 
+ if(@UserId is null)
+ Begin
+  -- If UserId does not exist
+  Select 0 as IsPasswordChanged
+ End
+ Else
+ Begin
+  -- If UserId exists, Update with new password
+  Update tblUsers set
+  [Password_] = @Password
+  where id = @UserId
+  
+  -- Delete the password reset request row 
+  Delete from tblResetPasswordRequest
+  where id = @GUID
+  
+  Select 1 as IsPasswordChanged
+ End
+End
