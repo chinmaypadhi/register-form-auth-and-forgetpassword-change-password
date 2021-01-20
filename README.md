@@ -1,11 +1,11 @@
 # register-form-auth-and-forgetpassword-change-password
 create database Sample
 use Sample
-
+------------------------------------
 create table tblUsers(id int identity primary key not null 
 ,userName varchar(200),password varchar(200),
 email unique varchar(200))
-
+------------------------------------
 //check the user  is unique or not at the time of insertion
 
 
@@ -37,6 +37,7 @@ select @count=count(email) from tblUsers
 
  select @returncode as ReturnValue
  end
+ ...............................................
 
 //check authenticate user or not
 
@@ -60,13 +61,13 @@ Begin
  End
 End
 
-
+---------------------------------------------------
 
 //send mail database code(reset password)
 
 create table tblResetPasswordRequest(id uniqueIdentifier  primary key not null ,userId int foreign key references tblUsers(id),resetRequetDateTime Datetime)
 
-
+----------------------------------------------
 
 create procedure SpResetPassword 
 @email varchar(100)
@@ -88,7 +89,7 @@ select 0 as returncode,null as uniqueid,null as userName
 end
 end
 
-
+----------------------------------
 //Stored Procedure to check, if the password reset link, is a valid link.
 
 
@@ -108,6 +109,8 @@ Begin
  End
 End
 
+---------------------------------
+//procedure to change the password 
 
 alter Proc spChangePassword
 @GUID uniqueidentifier,
@@ -139,3 +142,29 @@ Begin
   Select 1 as IsPasswordChanged
  End
 End
+-----------
+
+//procedure to change the password with login
+
+Create Proc spChangePasswordUsingCurrentPassword
+@email nvarchar(100),
+@CurrentPassword nvarchar(100),
+@NewPassword nvarchar(100)
+as
+Begin
+ if(Exists(Select Id from tblUsers 
+     where email  = @email 
+     and password_= @CurrentPassword))
+ Begin
+  Update tblUsers
+  Set password_ = @NewPassword
+  where email = @email
+  
+  Select 1 as IsPasswordChanged
+ End
+ Else
+ Begin
+  Select 0 as IsPasswordChanged
+ End
+End
+
