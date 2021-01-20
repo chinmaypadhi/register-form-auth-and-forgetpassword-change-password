@@ -63,6 +63,99 @@ Begin
   Select -1 as ReturnCode
  End
 End
+...........................................
+
+CHECK A USER HOWMANY TIME TRY TO LOGGED IN   (IF IT >3) THEN BLOCK THE USER FOR 20 MINUTE
+.............................................................................................
+
+
+ Alter proc spAuthenticateUser
+@email nvarchar(100),
+@Password nvarchar(200)
+as
+Begin
+ Declare @AccountLocked bit
+ Declare @Count int
+ Declare @RetryCount int
+ 
+ Select @AccountLocked = IsLocked
+ from tblUsers where email = @email
+  
+ --If the account is already locked
+ if(@AccountLocked = 1)
+ Begin
+  Select 1 as AccountLocked, 0 as Authenticated, 0 as RetryAttempts
+ End
+ Else
+ Begin
+  -- Check if the username and password match
+  Select @Count = COUNT(UserName) from tblUsers
+  where email = @email and [Password_] = @Password
+  
+  -- If match found
+  if(@Count = 1)
+  Begin
+   -- Reset RetryAttempts 
+   Update tblUsers set RetryAttempts = 0
+   where email = @email
+       
+   Select 0 as AccountLocked, 1 as Authenticated, 0 as RetryAttempts
+  End
+  Else
+  Begin
+   -- If a match is not found
+   Select @RetryCount = IsNULL(RetryAttempts, 0)
+   from tblUsers
+   where email = @email
+   
+   Set @RetryCount = @RetryCount + 1
+   
+   if(@RetryCount <= 3)
+   Begin
+    -- If re-try attempts are not completed
+    Update tblUsers set RetryAttempts = @RetryCount
+    where email = @email 
+    
+    Select 0 as AccountLocked, 0 as Authenticated, @RetryCount as RetryAttempts
+   End
+   Else
+   Begin
+    -- If re-try attempts are completed
+    Update tblUsers set RetryAttempts = @RetryCount,
+    IsLocked = 1, LockedDateTime = GETDATE()
+    where email = @email
+
+    Select 1 as AccountLocked, 0 as Authenticated, 0 as RetryAttempts
+   End
+  End
+ End
+End
+.....................................
+ACCOUNT REMOVE AUTOMATICALY IN 5 MINUTE
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Let us now, schedule this update query to run every 5 minutes, every day. This can be very easily done using sql server agent jobs. In this video, we will discuss about creating and scheduling sql server agent jobs, for sql server 2008.
+1. Open sql serevr management studio
+2. In the object explorer, check if "SQL Server Agent" is running.
+3. If "SQL Server Agent" is not running, right click and select "Start".
+4. Click on the "+" sign, next to "SQL Server Agent" to expand.
+5. Right click on "Jobs" folder and select "New Job".
+6. In the "New Job" dialog box, provide a meaningful name. Let us call it, "Unlock user accounts job".
+7. Fill in Owner, Category and Description fields accordingly. Make sure the Enabled checkbox is selected.
+8. Select "Steps" tab, and click "New" button
+9. In the "New Job Step" dialog box, give a meaningful step name. Let us call it "Execute Update Query"
+10. Select Transact-SQL Script as "Type"
+11. Select the respective Database.
+12. In the "Command" text box, copy and paste the UPDATE query, and click OK
+13. In the "New Job" dialog box, select "Schedules" and click "New" button
+14. In the "New Job Schedule" dialog box, give a meaningful name to the schedule. Let us call it "Run Every 5 Minutes Daily"
+15. Choose "Recurring" as "Schedule type"
+16. Under "Frequency", set "Occurs" = "Daily" and "Recurs every" = "1" Days.
+17. Under "Daily Frequency", set "Occurs every" = "5" Minutes.
+18. Finally fill in the schedule start and end dates, under "Duration"
+19. Click OK, twice and you are done.
+
+This job, will run every 5 minutes daily, and unlocks the accounts that has been locked for more than 24 hours.
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 ---------------------------------------------------
 
