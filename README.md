@@ -8,10 +8,9 @@ create table tblUsers(id int identity primary key not null ,email nvarchar(100) 
  [LockedDateTime] datetime)
 email unique varchar(200))
 ------------------------------------
-//check the user  is unique or not at the time of registration
+//check the user  is unique or not at the time of registration and also perform insertion 
 
-
-create proc spRegisterUser
+ alter proc spRegisterUser
 @UserName nvarchar(100),
 @password_ nvarchar(200),
 @email nvarchar(200)
@@ -34,7 +33,7 @@ select @count=count(email) from tblUsers
 
  begin
  set @returncode=1
- insert into tblUsers values(@UserName,@password_,@email)
+ insert into tblUsers(userName,password_,email) values(@UserName,@password_,@email)
  end
 
  select @returncode as ReturnValue
