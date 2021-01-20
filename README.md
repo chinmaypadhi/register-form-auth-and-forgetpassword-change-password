@@ -6,7 +6,7 @@ create table tblUsers(id int identity primary key not null
 ,userName varchar(200),password varchar(200),
 email unique varchar(200))
 ------------------------------------
-//check the user  is unique or not at the time of insertion
+//check the user  is unique or not at the time of registration
 
 
 create proc spRegisterUser
