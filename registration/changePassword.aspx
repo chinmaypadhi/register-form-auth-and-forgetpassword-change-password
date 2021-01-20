@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="changePassword.aspx.cs" Inherits="WebApplication76.registration.changePassword" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="changePassword.aspx.cs" Inherits="WebApplication76.registration.changedPasswordWithLogin" %>
 
 <!DOCTYPE html>
 
@@ -15,6 +15,19 @@
             <b>Change Password</b>
         </td>
     </tr>
+    <tr id="trCurrentPassword" runat="server">
+        <td>
+            Current Password
+        </td>
+        <td>
+            :<asp:TextBox ID="txtCurrentPassword" TextMode="Password" 
+            runat="server"></asp:TextBox>
+            <asp:RequiredFieldValidator ID="RequiredFieldValidatorCurrentPassword" 
+                runat="server" ErrorMessage="Current Password required"
+                Text="*" ControlToValidate="txtCurrentPassword" ForeColor="Red">
+            </asp:RequiredFieldValidator>
+        </td>
+    </tr>
     <tr>
         <td>
             New Password
@@ -24,9 +37,6 @@
             runat="server"></asp:TextBox>
             <asp:RequiredFieldValidator ID="RequiredFieldValidatorNewPassword" 
                 runat="server" ErrorMessage="New Password required"
-
- 
-
                 Text="*" ControlToValidate="txtNewPassword" ForeColor="Red">
             </asp:RequiredFieldValidator>
         </td>
@@ -43,6 +53,9 @@
                 ControlToValidate="txtConfirmNewPassword"
                 ForeColor="Red" Display="Dynamic"></asp:RequiredFieldValidator>
             <asp:CompareValidator ID="CompareValidatorPassword" runat="server" 
+
+ 
+
                 ErrorMessage="New Password and Confirm New Password must match"
                 ControlToValidate="txtConfirmNewPassword" ForeColor="Red" 
                 ControlToCompare="txtNewPassword"
