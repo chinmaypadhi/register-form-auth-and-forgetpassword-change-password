@@ -2,8 +2,10 @@
 create database Sample
 use Sample
 ------------------------------------
-create table tblUsers(id int identity primary key not null 
-,userName varchar(200),password varchar(200),
+create table tblUsers(id int identity primary key not null ,email nvarchar(100) unique
+,userName varchar(200),password varchar(200), [RetryAttempts] int,
+ [IsLocked] bit,
+ [LockedDateTime] datetime)
 email unique varchar(200))
 ------------------------------------
 //check the user  is unique or not at the time of registration
