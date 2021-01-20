@@ -39,7 +39,9 @@ select @count=count(email) from tblUsers
 
  select @returncode as ReturnValue
  end
- ...............................................
+ ..................................................................
+ //command to check the stored procedure sp_helptext spRegisterUser
+ ..................................................................
 
 //check authenticate user or not
 
