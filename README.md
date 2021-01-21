@@ -43,17 +43,14 @@ select @count=count(email) from tblUsers
  ..................................................................
 
 //check authenticate user or not
-
- Create Procedure spAuthenticateUser
-@email nvarchar(100),
-@Password_ nvarchar(100)
+alter Procedure spAuthenticateUser1
+@email nvarchar(100)
 as
 Begin
  Declare @Count int
  
- Select @Count = COUNT(UserName) from tblUsers
- where [email] = @email and [Password_] = @password_
- 
+ Select @Count = COUNT(email) from tblUsers
+ where [email] = @email 
  if(@Count = 1)
  Begin
   Select 1 as ReturnCode
@@ -131,7 +128,7 @@ Begin
  End
 End
 .....................................
-ACCOUNT REMOVE AUTOMATICALY IN 5 MINUTE
+ACCOUNT REMOVE AUTOMATICALY IN 24 MINUTE
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 Let us now, schedule this update query to run every 5 minutes, every day. This can be very easily done using sql server agent jobs. In this video, we will discuss about creating and scheduling sql server agent jobs, for sql server 2008.
 1. Open sql serevr management studio
@@ -263,4 +260,30 @@ Begin
   Select 0 as IsPasswordChanged
  End
 End
+
+
+...................................................
+procedure to retrive all the locked user acount
+...............................................
+
+Create proc spGetAllLocakedUserAccounts
+as
+Begin
+ Select UserName, Email, LockedDateTime,
+ DATEDIFF(hour, LockedDateTime, GETDATE()) as HoursElapsed
+ from tblUsers
+ where IsLocked = 1
+End
+.......................................................
+procedure to enable the locked users
+.......................................................
+
+Create proc spEnableUserAccount
+@email varchar(200)
+as
+Begin
+ update tblUsers set RetryAttempts=0,IsLocked=null,LockedDateTime=null 
+ where email = @email
+End
+
 
