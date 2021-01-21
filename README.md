@@ -43,17 +43,14 @@ select @count=count(email) from tblUsers
  ..................................................................
 
 //check authenticate user or not
-
- Create Procedure spAuthenticateUser
-@email nvarchar(100),
-@Password_ nvarchar(100)
+alter Procedure spAuthenticateUser1
+@email nvarchar(100)
 as
 Begin
  Declare @Count int
  
- Select @Count = COUNT(UserName) from tblUsers
- where [email] = @email and [Password_] = @password_
- 
+ Select @Count = COUNT(email) from tblUsers
+ where [email] = @email 
  if(@Count = 1)
  Begin
   Select 1 as ReturnCode
