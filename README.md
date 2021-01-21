@@ -261,3 +261,29 @@ Begin
  End
 End
 
+
+...................................................
+procedure to retrive all the locked user acount
+...............................................
+
+Create proc spGetAllLocakedUserAccounts
+as
+Begin
+ Select UserName, Email, LockedDateTime,
+ DATEDIFF(hour, LockedDateTime, GETDATE()) as HoursElapsed
+ from tblUsers
+ where IsLocked = 1
+End
+.......................................................
+procedure to enable the locked users
+.......................................................
+
+Create proc spEnableUserAccount
+@email varchar(200)
+as
+Begin
+ update tblUsers set RetryAttempts=0,IsLocked=null,LockedDateTime=null 
+ where email = @email
+End
+
+
