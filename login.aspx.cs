@@ -17,13 +17,20 @@ namespace WebApplication76
         {
            
         }
-
         protected void sndButton_Click(object sender, EventArgs e)
         {
-            AuthenticateUser(UserEmail.Text, Password.Text);
-        }
+            if (AuthenticateUser1(UserEmail.Text))
+            {
+                AuthenticateUser(UserEmail.Text, Password.Text);
+            }
+            else
+            {
+                errorLogin.ForeColor = System.Drawing.Color.Red;
+                errorLogin.Text = "Invalid User Name and/or Password";
+            }
 
-        private void AuthenticateUser(string username, string password)
+        }
+    private void AuthenticateUser(string username, string password)
         {
             // ConfigurationManager class is in System.Configuration namespace
             string CS = ConfigurationManager.ConnectionStrings["DBCS"].ConnectionString;
@@ -68,6 +75,28 @@ namespace WebApplication76
                 }
             }
         }
+
+
+
+        private bool AuthenticateUser1(string username)
+        {
+            // ConfigurationManager class is in System.Configuration namespace
+            string CS = ConfigurationManager.ConnectionStrings["DBCS"].ConnectionString;
+            // SqlConnection is in System.Data.SqlClient namespace
+            using (SqlConnection con = new SqlConnection(CS))
+            {
+                SqlCommand cmd = new SqlCommand("spAuthenticateUser1", con);
+                cmd.CommandType = CommandType.StoredProcedure;
+                // SqlParameter is in System.Data namespace
+                SqlParameter paramUsername = new SqlParameter("@email", username);
+                cmd.Parameters.Add(paramUsername);
+                con.Open();
+                int ReturnCode = (int)cmd.ExecuteScalar();
+                return ReturnCode == 1;
+            }
+        }
+
+
 
 
         protected void signupButton_Click(object sender, EventArgs e)
