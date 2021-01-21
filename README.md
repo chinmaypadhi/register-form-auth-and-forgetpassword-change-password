@@ -128,7 +128,7 @@ Begin
  End
 End
 .....................................
-ACCOUNT REMOVE AUTOMATICALY IN 5 MINUTE
+ACCOUNT REMOVE AUTOMATICALY IN 24 MINUTE
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 Let us now, schedule this update query to run every 5 minutes, every day. This can be very easily done using sql server agent jobs. In this video, we will discuss about creating and scheduling sql server agent jobs, for sql server 2008.
 1. Open sql serevr management studio
