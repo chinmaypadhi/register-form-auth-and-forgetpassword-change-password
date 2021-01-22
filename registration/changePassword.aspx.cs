@@ -8,11 +8,13 @@ using System.Web;
 using System.Web.Security;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using MYBLL;
 
 namespace WebApplication76.registration
 {
     public partial class changedPasswordWithLogin : System.Web.UI.Page
     {
+        mybll ob = new mybll(globalConnection.str);
         protected void Page_Load(object sender, EventArgs e)
         {
             if (Request.QueryString["uid"] == null && User.Identity.Name == "")
@@ -68,25 +70,7 @@ namespace WebApplication76.registration
             Value = Request.QueryString["uid"]
         }
     };
-
-            return ExecuteSP("spIsPasswordResetLinkValid", paramList);
-        }
-///////////////////////////////////////////////////////////////////////////
-       private bool ExecuteSP(string SPName, List<SqlParameter> SPParameters)
-        {
-            string CS = ConfigurationManager.ConnectionStrings["DBCS"].ConnectionString;
-            using (SqlConnection con = new SqlConnection(CS))
-            {
-                SqlCommand cmd = new SqlCommand(SPName, con);
-              cmd.CommandType = CommandType.StoredProcedure;
-
-                foreach (SqlParameter parameter in SPParameters)
-                {
-                    cmd.Parameters.Add(parameter);
-                }
-con.Open();
-return Convert.ToBoolean(cmd.ExecuteScalar());
-            }
+            return Convert.ToBoolean(ob.ExecuteScallerWithReturntype("spIsPasswordResetLinkValid", paramList));
         }
 
         private bool ChangeUserPassword()
@@ -104,8 +88,7 @@ return Convert.ToBoolean(cmd.ExecuteScalar());
             Value = FormsAuthentication.HashPasswordForStoringInConfigFile(txtNewPassword.Text, "SHA1")
         }
     };
-
-            return ExecuteSP("spChangePassword", paramList);
+            return Convert.ToBoolean(ob.ExecuteScallerWithReturntype("spChangePassword", paramList));
         }
 
         private bool ChangeUserPasswordUsingCurrentPassword()
@@ -128,8 +111,8 @@ return Convert.ToBoolean(cmd.ExecuteScalar());
             Value = FormsAuthentication.HashPasswordForStoringInConfigFile(txtNewPassword.Text, "SHA1")
         }
     };
+            return Convert.ToBoolean(ob.ExecuteScallerWithReturntype("spChangePasswordUsingCurrentPassword", paramList));
 
-            return ExecuteSP("spChangePasswordUsingCurrentPassword", paramList);
         }
 
 

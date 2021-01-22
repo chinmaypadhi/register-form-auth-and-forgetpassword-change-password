@@ -8,11 +8,14 @@ using System.Web.Security;
 using System.Data;
 using System.Data.SqlClient;
 using System.Configuration;
+using MYBLL;
 
 namespace WebApplication76
 {
     public partial class WebForm1 : System.Web.UI.Page
     {
+
+        static mybll ob = new mybll(globalConnection.str);
         protected void Page_Load(object sender, EventArgs e)
         {
            
@@ -28,31 +31,27 @@ namespace WebApplication76
                 errorLogin.ForeColor = System.Drawing.Color.Red;
                 errorLogin.Text = "Invalid User Name and/or Password";
             }
-
         }
-    private void AuthenticateUser(string username, string password)
+        private void AuthenticateUser(string username, string password)
         {
-            // ConfigurationManager class is in System.Configuration namespace
-            string CS = ConfigurationManager.ConnectionStrings["DBCS"].ConnectionString;
+                //"spAuthenticateUser"
 
-            // SqlConnection is in System.Data.SqlClient namespace
-            using (SqlConnection con = new SqlConnection(CS))
-            {
-                SqlCommand cmd = new SqlCommand("spAuthenticateUser", con);
-                cmd.CommandType = CommandType.StoredProcedure;
-
-                //Formsauthentication is in system.web.security
                 string encryptedpassword = FormsAuthentication.HashPasswordForStoringInConfigFile(password, "SHA1");
-
-                //sqlparameter is in System.Data namespace
-                SqlParameter paramUsername = new SqlParameter("@email", username);
-                SqlParameter paramPassword = new SqlParameter("@Password", encryptedpassword);
-
-                cmd.Parameters.Add(paramUsername);
-                cmd.Parameters.Add(paramPassword);
-
-                con.Open();
-                SqlDataReader rdr = cmd.ExecuteReader();
+                List<SqlParameter> paramList = new List<SqlParameter>()
+            {
+                new SqlParameter()
+                {
+                    ParameterName ="@email",
+                    Value =username
+                },
+                new SqlParameter()
+                {
+                    ParameterName ="@Password",
+                    Value =encryptedpassword
+                },
+            };
+            
+            SqlDataReader rdr = ob.ExecuteReaderWithParamiterAndReturntype("spAuthenticateUser", paramList);
                 while (rdr.Read())
                 {
                     int RetryAttempts = Convert.ToInt32(rdr["RetryAttempts"]);
@@ -74,31 +73,20 @@ namespace WebApplication76
                     }
                 }
             }
-        }
-
-
-
         private bool AuthenticateUser1(string username)
         {
-            // ConfigurationManager class is in System.Configuration namespace
-            string CS = ConfigurationManager.ConnectionStrings["DBCS"].ConnectionString;
-            // SqlConnection is in System.Data.SqlClient namespace
-            using (SqlConnection con = new SqlConnection(CS))
+                    List<SqlParameter> paramList = new List<SqlParameter>()
             {
-                SqlCommand cmd = new SqlCommand("spAuthenticateUser1", con);
-                cmd.CommandType = CommandType.StoredProcedure;
-                // SqlParameter is in System.Data namespace
-                SqlParameter paramUsername = new SqlParameter("@email", username);
-                cmd.Parameters.Add(paramUsername);
-                con.Open();
-                int ReturnCode = (int)cmd.ExecuteScalar();
+                new SqlParameter()
+                {
+                    ParameterName ="@email",
+                    Value =username
+                },
+            };
+
+                int ReturnCode = (int)ob.ExecuteScallerWithReturntype("spAuthenticateUser1",paramList);
                 return ReturnCode == 1;
-            }
         }
-
-
-
-
         protected void signupButton_Click(object sender, EventArgs e)
         {
             if (Page.IsValid)
@@ -106,19 +94,29 @@ namespace WebApplication76
                 string cs = ConfigurationManager.ConnectionStrings["DBCS"].ToString();
                 using (SqlConnection con = new SqlConnection(cs))
                 {
-                    SqlCommand cmd = new SqlCommand("spRegisterUser", con);
-                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    //"spRegisterUser"
+
                     string encriptdPassword = FormsAuthentication.HashPasswordForStoringInConfigFile(signupPass.Text, "SHA1");
-
-                    SqlParameter username = new SqlParameter("@username", signupuser.Text);
-                    SqlParameter password = new SqlParameter("@password_", encriptdPassword);
-                    SqlParameter email = new SqlParameter("@Email", signupEmail.Text);
-
-                    cmd.Parameters.Add(username);
-                    cmd.Parameters.Add(password);
-                    cmd.Parameters.Add(email);
-                    con.Open();
-                    int ReturnCode = (int)cmd.ExecuteScalar();
+                    List<SqlParameter> paramList = new List<SqlParameter>()
+            {
+                new SqlParameter()
+                {
+                    ParameterName ="@username",
+                    Value =signupuser.Text
+                },
+                new SqlParameter()
+                {
+                    ParameterName ="@Password_",
+                    Value =encriptdPassword
+                },
+                                new SqlParameter()
+                {
+                    ParameterName ="@Email",
+                    Value =signupEmail.Text
+                },
+            };
+                    int ReturnCode = (int)ob.ExecuteScallerWithReturntype("spRegisterUser", paramList);
                     if (ReturnCode == -1)
                     {
                     }
